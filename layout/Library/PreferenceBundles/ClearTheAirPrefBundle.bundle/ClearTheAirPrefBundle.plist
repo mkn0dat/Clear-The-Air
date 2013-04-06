@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>isStaticText</key>
+			<true/>
+			<key>label</key>
+			<string>Setting</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>defaults</key>
+			<string>com.mkn0dat.cleartheair</string>
+			<key>default</key>
+			<false/>
+			<key>key</key>
+			<string>Enabled</string>
+			<key>PostNotification</key>
+			<string>com.mkn0dat.cleartheair.settingschanged</string>
+			<key>label</key>
+			<string>Enabled</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>isStaticText</key>
+			<true/>
+			<key>label</key>
+			<string>Transparency</string>
+		</dict>
+		<dict>
+			<key>PostNotification</key>
+			<string>com.mkn0dat.cleartheair.settingschanged</string>
+			<key>key</key>
+			<string>Transparency</string>
+			<key>default</key>
+			<real>0</real>
+			<key>max</key>
+			<string>1.0</string>
+			<key>min</key>
+			<string>0.0</string>
+			<key>defaults</key>
+			<string>com.mkn0dat.cleartheair</string>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Author</string>
+			<key>footerText</key>
+			<string>Clear The Air © 2013 mkn0dat</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>action</key>
+			<string>openTwitter</string>
+			<key>label</key>
+			<string>Developer (@mkn0dat) on Twitter</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>Clear The Air</string>
+</dict>
+</plist>
