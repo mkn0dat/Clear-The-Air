@@ -53,7 +53,8 @@ static BOOL KeepOpacity = NO;
     if (TweakEnabled && KeepOpacity){
         UIScrollView *aScrollView = [[%c(SBIconController) sharedInstance] scrollView];
         CGPoint kOffset = [aScrollView contentOffset];
-        if (kOffset.x < 320){
+        CGRect kRect = [[UIScreen mainScreen] bounds];
+        if (kOffset.x < kRect.size.width){
             %orig(1.0);
             return;
         }
