@@ -1,9 +1,9 @@
 Package: com.mkn0dat.cleartheair
 Name: Clear The Air
 Depends: mobilesubstrate
-Version: 0.0.1
-Architecture: iphoneos-arm
-Description: Change the transparency of the black semitransparent background for spotlight.
+Version: 1.0.0
+Architecture: iphoneos-arm, firmware ( >= 5.0 )
+Description: Change the UI opacity.
 Maintainer: mkn0dat
 Author: mkn0dat
 Section: Tweaks

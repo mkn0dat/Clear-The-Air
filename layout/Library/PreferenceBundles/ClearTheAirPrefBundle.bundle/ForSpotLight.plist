@@ -10,35 +10,39 @@
 			<key>isStaticText</key>
 			<true/>
 			<key>label</key>
-			<string>Location</string>
+			<string>Settings</string>
 		</dict>
 		<dict>
 			<key>cell</key>
-			<string>PSLinkListCell</string>
+			<string>PSSwitchCell</string>
 			<key>defaults</key>
-			<string>com.mkn0dat.cleartheairforlockscreen</string>
-			<key>detail</key>
-			<string>SpotLightViewController</string>
-			<key>icon</key>
-			<string>SpotLightIcon.png</string>
+			<string>com.mkn0dat.cleartheair</string>
+			<key>default</key>
+			<false/>
 			<key>key</key>
-			<string>spotlight</string>
+			<string>Enabled</string>
+			<key>PostNotification</key>
+			<string>com.mkn0dat.cleartheair.settingschanged</string>
 			<key>label</key>
-			<string>SpotLight</string>
+			<string>Enabled</string>
 		</dict>
 		<dict>
-			<key>cell</key>
-			<string>PSLinkListCell</string>
-			<key>defaults</key>
-			<string>com.mkn0dat.cleartheairforlockscreen</string>
-			<key>detail</key>
-			<string>LockscreenViewController</string>
-			<key>icon</key>
-			<string>LockscreenIcon.png</string>
+			<key>PostNotification</key>
+			<string>com.mkn0dat.cleartheair.settingschanged</string>
 			<key>key</key>
-			<string>lockscreen</string>
+			<string>Transmittance</string>
+			<key>default</key>
+			<real>0</real>
+			<key>max</key>
+			<string>1.0</string>
+			<key>min</key>
+			<string>0.0</string>
+			<key>defaults</key>
+			<string>com.mkn0dat.cleartheair</string>
+			<key>cell</key>
+			<string>PSSliderCell</string>
 			<key>label</key>
-			<string>Lockscreen</string>
+			<string>Transmittance</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -58,6 +62,6 @@
 		</dict>
 	</array>
 	<key>title</key>
-	<string>Clear The Air</string>
+	<string>SpotLight</string>
 </dict>
 </plist>

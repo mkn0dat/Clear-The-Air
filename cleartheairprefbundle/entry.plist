@@ -1,0 +1,10 @@
+{
+	entry = {
+		bundle = "ClearTheAirPrefBundle";
+		cell = PSLinkCell;
+		detail = "ClearTheAirPrefBundleListController";
+		icon = "ClearTheAirPrefBundle.png";
+		isController = 1;
+		label = "Clear The Air";
+	};
+}
