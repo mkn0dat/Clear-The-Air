@@ -1,7 +1,7 @@
 #import <UIKit/UIStatusBar.h>
 #import <QuartzCore/QuartzCore.h>
 
-//forSpotLightSettings
+// for SpotLightSettings
 static BOOL TweakEnabled = YES;
 static BOOL Adjustable = YES;
 static BOOL KeepOpacity = NO;
@@ -9,7 +9,7 @@ static BOOL PitchDark = NO;
 static BOOL NotStartKeyboard = NO;
 static CGFloat Opacity = 1.0;
 
-//forLockscreenSettings
+// for LockscreenSettings
 static float StatusBar=0.0f;
 static float ClockBarBackground=0.0f;
 static float SliderBackground=0.0f;
@@ -30,10 +30,33 @@ static BOOL Locked=NO;
 static BOOL AbsolutelyClockBar=NO;
 static BOOL AbsolutelySliderBackground=NO;
 
+static BOOL ReloadGrabber = YES;
 static BOOL ReloadPressedKeypad = NO;
 static BOOL ReloadKeypad = NO;
 static NSMutableSet *instances = nil;
 
+
+@interface UIStatusBarBackgroundView : UIView
+@end
+
+@interface TPLockKnobView : UIView
+@end
+
+@interface TPBottomLockBar : UIView
+- (UIImageView*)backgroundView;
+- (TPLockKnobView*)knobView;
+@end
+
+@interface TPLCDView : UIView
+@end
+
+@interface SBAwayLockBar : TPBottomLockBar
+- (UIImageView *)cameraGrabber;
+- (void)printViewHierarchy:(UIView *)viewNode depth:(NSUInteger)depth;
+@end
+
+@interface SBSearchView : UIView
+@end
 
 @interface SBUIController : NSObject
 + (id)sharedInstance;
@@ -49,44 +72,51 @@ static NSMutableSet *instances = nil;
 @interface SBWallpaperView : UIImageView
 @end
 
-@interface SBIconScrollView : UIScrollView
-@end
-
-@interface SBIconController : NSObject
-{
-   SBIconScrollView *_scrollView;
-}
-- (SBIconScrollView *)scrollView;
-+ (id)sharedInstance;
-@end
-
-@interface UIStatusBarBackgroundView : UIView
-@end
-
-@interface TPLockKnobView : UIView
-@end
-
-@interface TPBottomLockBar : UIView
-- (UIImageView*)backgroundView;
-- (TPLockKnobView*)knobView;
-@end
-
-@interface SBAwayLockBar : TPBottomLockBar
-- (UIImageView *)cameraGrabber;
-@end
-
-@interface TPLCDView : UIView
-@end
-
 @interface SBDeviceLockEntryField : UIView
 @end
 
 @interface SBDeviceLockKeypad : NSObject
 @end
 
+@interface SBIconScrollView : UIScrollView
+@end
+
+@interface SBIconController : NSObject
+- (SBIconScrollView *)scrollView;
++ (id)sharedInstance;
+
+@end
+
+/* Next Generation
+- (SBSearchView *)searchView;
+- (void)showDock:(BOOL)arg1 delay:(double)arg2 duration:(double)arg3;
+- (id)dock;
+- (id)dockContainerView;
+@end
+
+@interface ShortcutMenu : UIView
+@end
+
+@interface MyButton : UIView
+@end
+
+%hook SBIconController
+
+- (void)scrollViewDidScroll:(id)arg1
+{
+    UIScrollView *scv = (UIScrollView *)arg1;
+    const CGRect rect = [(UIView *)[self dockContainerView] frame];
+    if (scv.contentOffset.x < 320 && scv.contentOffset.x > 0){
+        [(UIView *)[self dockContainerView] setFrame:CGRectMake(rect.origin.x,458.5+((86.5/320)*(320-scv.contentOffset.x)),rect.size.width,rect.size.height)];
+    }
+    %orig(arg1);
+}
+
+%end
+*/
+
 
 #pragma mark SpotLight
-
 
 %hook SBIconController
 
@@ -96,7 +126,6 @@ static NSMutableSet *instances = nil;
 }
 
 %end
-
 
 
 %hook SBAwayController
@@ -135,15 +164,14 @@ static NSMutableSet *instances = nil;
     Adjustable = YES;
 }
 
-
 - (void)finishedAnimatingOut
 {
     %orig;
     Adjustable = NO;
 }
 
-
 %end
+
 
 %hook SBWallpaperView
 
@@ -152,7 +180,6 @@ static NSMutableSet *instances = nil;
     if (!TweakEnabled || Adjustable|| Locked) {
         %orig(alpha); return;
     }
-    
     if (PitchDark){
         UIScrollView *aScrollView = [[%c(SBIconController) sharedInstance] scrollView];
         CGRect kRect = [[UIScreen mainScreen] bounds];
@@ -161,7 +188,6 @@ static NSMutableSet *instances = nil;
         %orig(alpha);
         return;
     }
-
     float transparency = 1 - Opacity;
     if(alpha < transparency){
         %orig((!alpha)? alpha : transparency);
@@ -172,7 +198,9 @@ static NSMutableSet *instances = nil;
 
 %end
 
+
 #pragma mark Lockscreen
+
 
 @interface UIImage (addingAlpha)
 - (UIImage *)imageByApplyingAlpha:(CGFloat)alpha;
@@ -191,8 +219,8 @@ static NSMutableSet *instances = nil;
 }
 
 - (UIImage *)imageByApplyingAlpha:(CGFloat)alpha
-{
-    if (!Enabled){
+{    
+    if (!Enabled) {
         return self;
     }
     UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0f);
@@ -210,7 +238,6 @@ static NSMutableSet *instances = nil;
 @end
 
 
-
 %hook SBAwayLockBar
 
 %new(@@:)
@@ -226,6 +253,7 @@ static NSMutableSet *instances = nil;
 }
 
 //------- Shadow -------//
+
 - (void)setAlpha:(float)alpha
 {
     for (UIView *view in self.subviews){
@@ -241,12 +269,16 @@ static NSMutableSet *instances = nil;
 
 
 -(id)initWithFrame:(CGRect)frame knobImage:(id)image
-{
+{    
+
 //------- Slider -------//
+
     [image saveToCTAWithName:@"Slider"];
     self = %orig(frame,[image imageByApplyingAlpha:Slider]);
 
+
 //------- Slider background -------//
+
     float iOSVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
     if(iOSVersion >= 6.0) {
         UIImageView *sliderBackgroundView = [self backgroundView];
@@ -269,14 +301,12 @@ static NSMutableSet *instances = nil;
     UIImage *ditchImage = sliderDitchView.image;
     [ditchImage saveToCTAWithName:@"SliderDitch"];
     [sliderDitchView setImage:[[ditchImage imageByApplyingAlpha:SliderDitch] stretchableImageWithLeftCapWidth:12 topCapHeight:12]];    
+    
     return self;
 }
 
-%end
 
-
-
-%hook SBAwayLockBar
+//------- Camera Grabber -------//
 
 %new(@@:)
 - (UIImageView*)cameraGrabber
@@ -284,17 +314,38 @@ static NSMutableSet *instances = nil;
     return MSHookIvar<UIImageView *>(self, "_cameraGrabber");
 }
 
-//------- Camera Grabber -------//
 -(void)setShowsCameraGrabber:(BOOL)grabber
 {
-    UIImage *cameraGrabberImage = [[self cameraGrabber] image];
-    [cameraGrabberImage saveToCTAWithName:@"CameraGrabber"];
-    [[self cameraGrabber] setImage:[cameraGrabberImage imageByApplyingAlpha:CameraGrabber]];
-	%orig;
+    %orig(grabber);
+    id obj = [self valueForKey:@"_cameraGrabber"];
+    if ([obj isMemberOfClass:NSClassFromString(@"ShortcutMenu")]){
+       
+         //------- Support Axis -------//
+        UIView *view = (UIView *)obj;
+        CGRect kRect = CGRectMake(0,0,30,52);
+        unsigned int i = 0;
+        for (i = 0; i < view.subviews.count; i++){
+            UIImageView *kView = [view.subviews objectAtIndex:i];
+            if(CGRectEqualToRect(kView.frame,kRect)){
+                kView.alpha = CameraGrabber;
+                [kView setImage:[kView.image imageByApplyingAlpha:CameraGrabber]];
+            }
+        }
+    } else {
+        UIImageView *cameraGrabber = (UIImageView *)obj;
+        UIImage *cameraGrabberImage = cameraGrabber.image;
+        if (ReloadGrabber){
+            [cameraGrabberImage saveToCTAWithName:@"CameraGrabber"];
+            ReloadGrabber = NO;
+        }
+        [[self cameraGrabber] setImage:[cameraGrabberImage imageByApplyingAlpha:CameraGrabber]];
+    }
 }
 
 %end
 
+
+//------- Statusbar -------//
 
 %hook UIStatusBarBackgroundView
 
@@ -324,7 +375,6 @@ static NSMutableSet *instances = nil;
     %orig;
 }
 
-//------- Statusbar -------//
 - (void)setAlpha:(float)alpha
 {    
     BOOL enabledAndHomeScreenAlso = (Enabled && HomeScreenAlso);
@@ -333,13 +383,13 @@ static NSMutableSet *instances = nil;
         CGPoint kOffset = [aScrollView contentOffset];
         CGRect kRect = [[UIScreen mainScreen] bounds];
         if (kOffset.x < kRect.size.width){
-            goto spotLightStatusBar;
+            goto SpotLightStatusBar;
         }
         %orig(StatusBar);
         return;
     }
     
-    spotLightStatusBar:
+    SpotLightStatusBar:
     if (TweakEnabled && KeepOpacity){
         %orig((enabledAndHomeScreenAlso)? StatusBar : 1.0f);
         return;
@@ -353,9 +403,6 @@ static NSMutableSet *instances = nil;
 %end
 
 
-@interface SBSearchView : UIView
-@end
-
 %hook SBSearchView
 
 - (void)setShowsKeyboard:(BOOL)arg1 animated:(BOOL)arg2
@@ -363,11 +410,9 @@ static NSMutableSet *instances = nil;
     %orig((TweakEnabled && NotStartKeyboard? NO : arg1),arg2);
 }
 
-
 - (void)setShowsKeyboard:(BOOL)arg1 animated:(BOOL)arg2 shouldDeferResponderStatus:(BOOL)arg3 completionBlock:(id)arg4
 {
     %orig((TweakEnabled && NotStartKeyboard? NO : arg1),arg2,arg3,arg4);
-
 }
 
 - (void)setShowsKeyboard:(BOOL)arg1 animated:(BOOL)arg2 shouldDeferResponderStatus:(BOOL)arg3
@@ -375,13 +420,13 @@ static NSMutableSet *instances = nil;
     %orig((TweakEnabled && NotStartKeyboard? NO : arg1),arg2,arg2);
 }
 
-
 %end
 
 
 %hook TPLCDView
 
 //------- ClockBar background -------//
+
 - (void)setImage:(UIImage *)image
 {
     [image saveToCTAWithName:@"ClockBarBackground"];
@@ -405,6 +450,7 @@ static NSMutableSet *instances = nil;
 %hook UIView
 
 //------- ClockBar Shadow -------//
+
 - (void)setAlpha:(float)alpha
 {
     if([self.superview isMemberOfClass:NSClassFromString(@"TPLCDView")] && self.frame.size.height == 3 && AbsolutelyClockBar && Enabled){
@@ -422,7 +468,9 @@ static NSMutableSet *instances = nil;
 
 %hook SBDeviceLockEntryField
 
+
 //------- PasscodeField background -------//
+
 -(id)_backgroundImage
 {
     UIImage *image = (UIImage *)%orig;
@@ -435,7 +483,9 @@ static NSMutableSet *instances = nil;
 
 %hook SBDeviceLockKeypad
 
+
 //------- Keypad -------//
+
 - (id)_keypadImage
 {
     if (!KeypadImageCache || ReloadKeypad){
@@ -447,7 +497,9 @@ static NSMutableSet *instances = nil;
     return KeypadImageCache;
 }
 
+
 //-------Pressed Keypad -------//
+
 - (id)_pressedImage
 {
     if (!PressedImageCache || ReloadPressedKeypad){
@@ -508,8 +560,9 @@ static void ReloadLockscreenSettings(void)
         RemoveSliderText = [[settings valueForKey:@"RemoveSliderText"]boolValue];
         ReloadPressedKeypad = YES;
         ReloadKeypad = YES;
+        ReloadGrabber = YES;
     }
-    
+
     for (UIStatusBarBackgroundView *object in instances){
         [object setAlpha:1.0f];
     }
@@ -535,7 +588,6 @@ static void ReloadSpotLightSettings(void)
     }
 	[settings release];
 }
-
 
 static void SettingsChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
 {
